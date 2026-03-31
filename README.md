@@ -21,12 +21,29 @@ The system:
 
 ## 🚀 Features
 
-### 🔹 Core Functionality
+- 🏠 Home dashboard with model overview
+- 🔍 Manual single prediction
+- 📂 Batch prediction via CSV upload
+- 📊 Model insights and visualization (in progress)
+- 🧠 Modular ML pipeline (training, preprocessing, prediction)
+- 🌐 Streamlit multipage architecture
 
-* Manual prediction using 30 diagnostic features
-* Batch prediction via CSV upload
-* Automatic model selection (best-performing model saved)
-* Prediction probabilities (confidence scores)
+## 🔹 Core Functionality
+
+- Manual prediction using 30 diagnostic features  
+- Batch prediction via CSV upload  
+- Automatic model selection (best-performing model saved)  
+- Prediction probabilities (confidence scores)  
+
+### 🚀 Advanced Features
+
+- Interactive Streamlit multipage application  
+- Model insights and feature importance visualization (upcoming)  
+- Advanced data visualizations and exploratory analysis (upcoming)  
+- Explainable AI integration for model interpretability (upcoming)  
+- Clinical-grade structured PDF report generation with diagnostic summary and probability interpretation (upcoming)  
+- Risk scoring and severity interpretation system (upcoming)  
+- Enhanced UI/UX with dashboard-style layout (upcoming)  
 
 ### 🔹 Web Application
 
@@ -95,40 +112,39 @@ The system:
 ## 🏗️ Project Structure
 
 ```bash
+## 📁 Project Structure
+
 breastcancerdetectionai/
 │
 ├── app/
-│   ├── streamlit_app.py
 │   └── pages/
-│       ├── 1_Home.py
-│       ├── 2_Manual_Prediction.py
-│       ├── 3_Batch_Prediction.py
-│       ├── 4_Visualizations.py
-│       ├── 5_Model_Insights.py
-│       └── 6_About_Project.py
+│       ├── 1_Manual_Prediction.py      # Manual input prediction UI
+│       ├── 2_Batch_Prediction.py       # CSV batch prediction UI
+│       ├── 3_Visualizations.py         # Data & model visualizations
+│       ├── 4_Model_Insights.py         # Model explainability & insights
+│       ├── 5_About_Project.py          # Project overview & methodology
+│       └── Home.py                     # Home / landing page (main UI)
 │
-├── data/
+├── data/                               # Dataset storage
 ├── models/
-│   └── best_model.pkl
-│
+│   └── best_model.pkl                  # Trained model bundle
 ├── notebooks/
-│   └── eda_and_modeling.ipynb
-│
-├── reports/
+│   └── eda_and_modeling.ipynb          # EDA & experimentation
+├── reports/                            # Generated outputs (future PDFs)
 │
 ├── src/
-│   ├── data_loader.py
-│   ├── preprocess.py
-│   ├── train.py
-│   ├── predict.py
-│   ├── evaluate.py
-│   ├── explain.py
-│   ├── unsupervised.py
-│   └── utils.py
+│   ├── data_loader.py                  # Data loading logic
+│   ├── preprocess.py                   # Preprocessing pipeline
+│   ├── train.py                        # Model training logic
+│   ├── predict.py                      # Prediction pipeline
+│   ├── explain.py                      # Model explainability
+│   └── unsupervised.py                 # Optional unsupervised analysis
 │
-├── requirements.txt
-├── README.md
-└── .gitignore
+├── venv/                               # Virtual environment (ignored in Git)
+├── main.py                             # Optional execution script
+├── requirements.txt                    # Dependencies
+├── .gitignore
+└── README.md
 ```
 
 ---
