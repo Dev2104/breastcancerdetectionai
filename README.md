@@ -1,234 +1,161 @@
-# 🩺 Breast Cancer Detection AI
+# 🧠 Breast Cancer Detection AI
 
-A machine learning-powered web application that predicts whether a breast tumor is **benign** or **malignant** using clinical diagnostic features.
+🚀 **Live App:** https://breastcancerdetectionai-dt2104.streamlit.app/
 
----
-
-## 📌 Project Overview
-
-Breast cancer is one of the most common cancers worldwide. Early detection significantly improves treatment outcomes.
-
-This project builds an **end-to-end machine learning pipeline** combined with an **interactive web interface** to assist in early detection by analyzing tumor characteristics.
-
-The system:
-
-* Processes clinical diagnostic data
-* Trains multiple machine learning models
-* Selects the best-performing model
-* Provides predictions through a user-friendly web application
+An end-to-end AI-powered system for early breast cancer detection using machine learning and an interactive multi-page Streamlit interface.
 
 ---
 
-## 🚀 Features
+## 📌 Overview
 
-- 🏠 Home dashboard with model overview
-- 🔍 Manual single prediction
-- 📂 Batch prediction via CSV upload
-- 📊 Model insights and visualization (in progress)
-- 🧠 Modular ML pipeline (training, preprocessing, prediction)
-- 🌐 Streamlit multipage architecture
+This project is a complete machine learning pipeline designed to simulate a real-world medical diagnostic system for breast cancer detection. It includes data preprocessing, model training, evaluation, deployment, and an interactive user interface.
+
+The goal is to build a **thesis-level AI application** that not only predicts cancer but also evolves toward explainability, reporting, and real-world usability.
+
+---
 
 ## 🔹 Core Functionality
 
-- Manual prediction using 30 diagnostic features  
-- Batch prediction via CSV upload  
-- Automatic model selection (best-performing model saved)  
-- Prediction probabilities (confidence scores)  
+* Manual prediction using 30 diagnostic features
+* Batch prediction via CSV upload
+* Automatic model selection (best-performing model saved)
+* Prediction probabilities (confidence scores)
+* Interactive multi-page Streamlit UI (Home, Prediction, Insights, Visualizations)
 
-### 🚀 Advanced Features
+### 🔜 Upcoming Features
 
-- Interactive Streamlit multipage application  
-- Model insights and feature importance visualization (upcoming)  
-- Advanced data visualizations and exploratory analysis (upcoming)  
-- Explainable AI integration for model interpretability (upcoming)  
-- Clinical-grade structured PDF report generation with diagnostic summary and probability interpretation (upcoming)  
-- Risk scoring and severity interpretation system (upcoming)  
-- Enhanced UI/UX with dashboard-style layout (upcoming)  
-
-### 🔹 Web Application
-
-* Built with Streamlit
-* Multi-page navigation:
-
-  * Home
-  * Manual Prediction
-  * Batch Prediction
-  * Visualizations (planned)
-  * Model Insights (planned)
-  * About Project
-
-### 🔹 Machine Learning
-
-* Models implemented:
-
-  * Logistic Regression
-  * Decision Tree
-  * Random Forest
-  * Support Vector Machine (SVM)
-  * K-Nearest Neighbors (KNN)
-* Automatic scaling for models that require it
-* Model comparison based on accuracy
-* Deployment-ready model bundle
+* PDF medical-style report generation (like ECG reports)
+* Model explainability using SHAP / feature importance
+* Advanced evaluation metrics (ROC-AUC, confusion matrix, precision-recall)
+* Patient history tracking (simulation)
+* Risk scoring system beyond binary classification
+* Model comparison dashboard
+* Export predictions as downloadable reports
 
 ---
 
-## 🧠 How It Works
+## 📂 Project Structure
 
-1. **Data Loading**
-
-   * Dataset is loaded and cleaned
-
-2. **Preprocessing**
-
-   * Train-test split
-   * Feature scaling (StandardScaler)
-
-3. **Model Training**
-
-   * Multiple models are trained
-   * Each model is evaluated on test data
-
-4. **Model Selection**
-
-   * Best model selected based on accuracy
-
-5. **Model Saving**
-
-   * Saved as a bundle including:
-
-     * model
-     * scaler
-     * feature names
-     * metadata
-
-6. **Prediction**
-
-   * Input is validated
-   * Scaling applied if required
-   * Prediction + probability returned
-
----
-
-## 🏗️ Project Structure
-
-```bash
-## 📁 Project Structure
-
+```
 breastcancerdetectionai/
 │
 ├── app/
-│   └── pages/
-│       ├── 1_Manual_Prediction.py      # Manual input prediction UI
-│       ├── 2_Batch_Prediction.py       # CSV batch prediction UI
-│       ├── 3_Visualizations.py         # Data & model visualizations
-│       ├── 4_Model_Insights.py         # Model explainability & insights
-│       ├── 5_About_Project.py          # Project overview & methodology
-│       └── Home.py                     # Home / landing page (main UI)
+│   ├── Home.py
+│   ├── pages/
+│   │   ├── 1_Manual_Prediction.py
+│   │   ├── 2_Batch_Prediction.py
+│   │   ├── 3_Visualizations.py
+│   │   ├── 4_Model_Insights.py
+│   │   ├── 5_About_Project.py
 │
-├── data/                               # Dataset storage
+├── data/
 ├── models/
-│   └── best_model.pkl                  # Trained model bundle
+│   └── best_model.pkl
+│
 ├── notebooks/
-│   └── eda_and_modeling.ipynb          # EDA & experimentation
-├── reports/                            # Generated outputs (future PDFs)
+│   └── eda_and_modeling.ipynb
+│
+├── reports/
 │
 ├── src/
-│   ├── data_loader.py                  # Data loading logic
-│   ├── preprocess.py                   # Preprocessing pipeline
-│   ├── train.py                        # Model training logic
-│   ├── predict.py                      # Prediction pipeline
-│   ├── explain.py                      # Model explainability
-│   └── unsupervised.py                 # Optional unsupervised analysis
+│   ├── data_loader.py
+│   ├── preprocess.py
+│   ├── train.py
+│   ├── predict.py
+│   ├── explain.py
+│   ├── unsupervised.py
 │
-├── venv/                               # Virtual environment (ignored in Git)
-├── main.py                             # Optional execution script
-├── requirements.txt                    # Dependencies
-├── .gitignore
+├── main.py
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Installation & Setup
-
-### 1. Clone the repository
+## ⚙️ Run Locally
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/breastcancerdetectionai.git
+# Clone the repository
+git clone https://github.com/Dev2104/breastcancerdetectionai.git
+
+# Navigate to project
 cd breastcancerdetectionai
-```
 
-### 2. Create virtual environment
-
-```bash
+# Create virtual environment
 python -m venv venv
-```
 
-### 3. Activate environment
+# Activate (Windows)
+venv\Scripts\activate
 
-```bash
-venv\Scripts\activate   # Windows
-```
-
-### 4. Install dependencies
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the app
+streamlit run app/Home.py
 ```
 
 ---
 
-## ▶️ Running the Application
+## ☁️ Deployment
 
-```bash
-streamlit run app/streamlit_app.py
-```
+This application is deployed on **Streamlit Community Cloud**.
 
-Then open:
-
-👉 http://localhost:8501
+* **Main entry file:** `app/Home.py`
+* The app automatically rebuilds on every GitHub push
 
 ---
 
-## 📊 Example Output
+## 🤖 Models Used
 
-* Prediction: **Malignant / Benign**
-* Numeric Output: `0` or `1`
-* Probability:
+* Logistic Regression
+* Decision Tree
+* Random Forest
+* Support Vector Machine (SVM)
+* K-Nearest Neighbors (KNN)
 
-  * Malignant: 0.98
-  * Benign: 0.02
+The best-performing model is automatically selected and saved for deployment.
 
 ---
 
-## 📈 Future Improvements (Thesis Enhancements)
+## 📊 Dataset
 
-* Data visualization dashboard
-* Feature importance (SHAP / explainability)
-* Hyperparameter tuning
-* Cross-validation metrics
-* Unsupervised learning (clustering, PCA)
-* Model comparison dashboard
-* Deployment (Streamlit Cloud / AWS)
+* Breast Cancer Wisconsin Dataset (from sklearn)
+* 30 numerical features extracted from digitized tumor images
+* Target:
+
+  * `0 → Malignant`
+  * `1 → Benign`
+
+---
+
+## 📈 Future Scope
+
+This project is being extended toward a **real-world clinical AI system**, including:
+
+* AI-powered medical reports
+* Explainable AI (XAI)
+* Clinical-style dashboards
+* Multi-model ensemble learning
+* Integration with external datasets
 
 ---
 
 ## ⚠️ Disclaimer
 
-This application is intended for **educational and research purposes only**.
-
-It is **not a medical diagnostic tool** and should not be used for real-world medical decisions.
+This application is for **educational and research purposes only**.
+It is **not intended for medical diagnosis or clinical use**.
 
 ---
 
-## 👨‍💻 Author
+## 💼 Author
 
 **Dev Tailor**
-M.Sc. Data Science Student
-Germany 🇩🇪
+Aspiring Data Scientist | AI & Analytics Enthusiast
+
+This project is part of my Master's thesis focused on building real-world AI applications.
 
 ---
 
-## ⭐ If you found this project useful
+## ⭐ Support
 
-Give it a star ⭐ on GitHub — it helps a lot!
+If you found this project useful, consider giving it a ⭐ on GitHub!
