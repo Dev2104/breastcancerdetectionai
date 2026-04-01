@@ -1,82 +1,173 @@
 # 🧠 Breast Cancer Detection AI
 
-🚀 **Live App:** https://breastcancerdetectionai-dt2104.streamlit.app/
-
-An end-to-end AI-powered system for early breast cancer detection using machine learning and an interactive multi-page Streamlit interface.
+A full-stack machine learning application for early breast cancer prediction using supervised learning models, built with a production-ready pipeline and an interactive Streamlit web interface.
 
 ---
 
-## 📌 Overview
+## 🚀 Project Overview
 
-This project is a complete machine learning pipeline designed to simulate a real-world medical diagnostic system for breast cancer detection. It includes data preprocessing, model training, evaluation, deployment, and an interactive user interface.
+## 🌐 Live Demo
 
-The goal is to build a **thesis-level AI application** that not only predicts cancer but also evolves toward explainability, reporting, and real-world usability.
+🚀 Try the application here:  
+👉 https://breastcancerdetectionai-dt2104.streamlit.app
 
----
+This project predicts whether a breast tumor is **benign or malignant** using diagnostic features from the Breast Cancer Wisconsin dataset.
 
-## 🔹 Core Functionality
+It is designed as a **research-oriented decision-support system** and demonstrates a complete ML lifecycle:
 
-* Manual prediction using 30 diagnostic features
-* Batch prediction via CSV upload
-* Automatic model selection (best-performing model saved)
-* Prediction probabilities (confidence scores)
-* Interactive multi-page Streamlit UI (Home, Prediction, Insights, Visualizations)
-
-### 🔜 Upcoming Features
-
-* PDF medical-style report generation (like ECG reports)
-* Model explainability using SHAP / feature importance
-* Advanced evaluation metrics (ROC-AUC, confusion matrix, precision-recall)
-* Patient history tracking (simulation)
-* Risk scoring system beyond binary classification
-* Model comparison dashboard
-* Export predictions as downloadable reports
+- Data preprocessing  
+- Model training & evaluation  
+- Model selection  
+- Deployment-ready model packaging  
+- Interactive visualization & inference  
 
 ---
 
-## 📂 Project Structure
+## 🎯 Objectives
+
+- Build an end-to-end ML pipeline for medical classification  
+- Compare multiple supervised learning algorithms  
+- Provide interpretable insights using visualizations  
+- Deploy a user-friendly web application for predictions  
+
+---
+
+## 🧰 Tech Stack
+
+- **Language:** Python  
+- **ML Libraries:** scikit-learn, pandas, numpy  
+- **Visualization:** matplotlib, seaborn  
+- **Frontend:** Streamlit  
+- **Model Persistence:** joblib  
+
+---
+
+## 📁 Project Structure
 
 ```
 breastcancerdetectionai/
 │
 ├── app/
-│   ├── Home.py
-│   ├── pages/
-│   │   ├── 1_Manual_Prediction.py
-│   │   ├── 2_Batch_Prediction.py
-│   │   ├── 3_Visualizations.py
-│   │   ├── 4_Model_Insights.py
-│   │   ├── 5_About_Project.py
+│ ├── Home.py
+│ └── pages/
+│ ├── 2_Manual_Prediction.py
+│ ├── 3_Batch_Prediction.py
+│ └── 4_Visualizations.py
 │
-├── data/
 ├── models/
-│   └── best_model.pkl
-│
-├── notebooks/
-│   └── eda_and_modeling.ipynb
+│ └── best_model.pkl
 │
 ├── reports/
+│ ├── model_comparison.csv
+│ └── figures/
+│ ├── confusion_matrix.png
+│ └── roc_curve.png
 │
 ├── src/
-│   ├── data_loader.py
-│   ├── preprocess.py
-│   ├── train.py
-│   ├── predict.py
-│   ├── explain.py
-│   ├── unsupervised.py
+│ ├── data_loader.py
+│ ├── preprocess.py
+│ ├── train.py
+│ ├── evaluate.py
+│ ├── predict.py
+│ ├── unsupervised.py
+│ └── explain.py
 │
-├── main.py
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Run Locally
+
+---
+
+## 🔹 Core Functionality
+
+- Manual prediction using 30 diagnostic features  
+- Batch prediction via CSV upload  
+- Automatic model selection (best-performing model saved)  
+- Prediction probabilities (confidence scores)  
+
+---
+
+## 📊 Model Training & Evaluation
+
+### Models Implemented
+
+- Logistic Regression  
+- Decision Tree  
+- Random Forest  
+- Support Vector Machine  
+- K-Nearest Neighbors  
+
+### Evaluation Metrics
+
+- Accuracy  
+- Precision  
+- Recall  
+- F1 Score  
+- ROC-AUC  
+
+The system automatically selects the **best-performing model** and saves it in a deployment-ready format.
+
+---
+
+## 📈 Visualizations
+
+### ✅ Implemented
+
+- Class distribution analysis  
+- Feature distribution histograms  
+- Correlation heatmap  
+- Model comparison (accuracy-based)  
+- Confusion matrix (saved and displayed)  
+- ROC curve  
+- PCA (Principal Component Analysis) visualization  
+- Feature importance (model interpretability)  
+
+---
+
+## 🔜 Upcoming Features
+
+- Advanced model insights dashboard  
+- SHAP / XAI-based interpretability (Explainable AI)  
+- PCA variance explanation visualization  
+- Model performance comparison (multi-metric dashboard)  
+- Downloadable prediction reports  
+
+- 📄 **Health Report PDF Generation (Samsung Health–inspired)**  
+  - Generate professional medical-style reports for predictions  
+  - Include:
+    - Patient input summary  
+    - Prediction result (benign/malignant)  
+    - Confidence score  
+    - Key influencing features  
+    - Visual charts (probability, feature impact)  
+  - Export as downloadable PDF for real-world usability  
+
+- Model retraining interface from UI  
+- User input validation & error handling improvements  
+- Enhanced UI/UX for professional deployment  
+
+---
+
+## 🌐 Web Application
+
+The application is built using **Streamlit** and includes:
+
+- 🏠 Home Page → Project overview  
+- ✍️ Manual Prediction → Individual input prediction  
+- 📂 Batch Prediction → CSV upload predictions  
+- 📊 Visualizations → Data + model insights  
+
+---
+
+## ⚙️ How to Run Locally
+
+### 1. Clone the repository
 
 ```bash
-# Clone the repository
-git clone https://github.com/Dev2104/breastcancerdetectionai.git
+git clone https://github.com/your-username/breastcancerdetectionai.git
 
 # Navigate to project
 cd breastcancerdetectionai
