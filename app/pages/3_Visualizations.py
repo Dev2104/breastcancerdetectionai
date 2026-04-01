@@ -21,6 +21,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.data_loader import load_data  # noqa: E402
+from src.explain import get_feature_importance  # noqa: E402
+from src.unsupervised import run_pca_analysis  # noqa: E402
 
 
 REPORTS_DIR = PROJECT_ROOT / "reports"
@@ -247,24 +249,94 @@ def render_model_comparison() -> None:
     st.dataframe(comparison_df, use_container_width=True)
 
 
-def render_future_phase_message(title: str) -> None:
+def render_pca_visualization() -> None:
     """
-    Show a clean informational message for charts that will be enabled later.
-
-    Parameters
-    ----------
-    title : str
-        Name of the visualization section.
+    Render PCA scatter plot using the unsupervised analysis module.
 
     Returns
     -------
     None
     """
-    st.subheader(title)
-    st.info(
-        f"{title} will be enabled in the next development phase once the "
-        "corresponding backend evaluation and reporting components are added."
+    st.subheader("PCA Visualization")
+    st.write(
+        "This plot shows a 2D projection of the dataset using Principal Component Analysis (PCA). "
+        "It helps visualize how well benign and malignant cases are separated."
     )
+
+    try:
+        pca_df = run_pca_analysis()
+    except Exception as exc:
+        st.error(f"Error running PCA: {exc}")
+        return
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.scatterplot(
+        data=pca_df,
+        x="PC1",
+        y="PC2",
+        hue="target_label",
+        ax=ax
+    )
+
+    ax.set_title("PCA Projection (2D)")
+    ax.set_xlabel("Principal Component 1")
+    ax.set_ylabel("Principal Component 2")
+
+    st.pyplot(fig)
+    plt.close(fig)
+
+    st.dataframe(pca_df.head(), use_container_width=True)
+
+
+def render_feature_importance() -> None:
+    """
+    Render feature importance chart for the current best model.
+
+    Returns
+    -------
+    None
+    """
+    st.subheader("Feature Importance")
+    st.write(
+        "This chart shows the most influential diagnostic features used by the "
+        "current best-performing model."
+    )
+
+    try:
+        importance_df = get_feature_importance()
+    except ValueError as exc:
+        st.info(str(exc))
+        return
+    except Exception as exc:
+        st.error(f"Unable to load feature importance: {exc}")
+        return
+
+    top_n = st.slider(
+        "Select number of top features to display",
+        min_value=5,
+        max_value=min(20, len(importance_df)),
+        value=min(10, len(importance_df)),
+        step=1,
+        key="feature_importance_top_n",
+    )
+
+    top_df = importance_df.head(top_n).copy()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(
+        data=top_df,
+        x="Absolute Importance",
+        y="Feature",
+        ax=ax
+    )
+    ax.set_title("Top Feature Importances")
+    ax.set_xlabel("Absolute Importance")
+    ax.set_ylabel("Feature")
+
+    st.pyplot(fig)
+    plt.close(fig)
+
+    st.dataframe(top_df, use_container_width=True)
 
 
 def main() -> None:
@@ -331,9 +403,9 @@ def main() -> None:
             ),
         )
     elif visualization_option == "PCA Visualization":
-        render_future_phase_message("PCA Visualization")
+        render_pca_visualization()
     elif visualization_option == "Feature Importance":
-        render_future_phase_message("Feature Importance")
+        render_feature_importance()
 
 
 if __name__ == "__main__":
