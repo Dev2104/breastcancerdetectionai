@@ -1,18 +1,6 @@
-"""
-1_Home.py
-
-Home page for the Breast Cancer Detection AI Streamlit application.
-
-This page provides:
-- project overview
-- current model information from the saved deployment bundle
-- app usage guidance
-- current capabilities
-- research disclaimer
-"""
-
 from pathlib import Path
 import sys
+
 import streamlit as st
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -22,149 +10,268 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.predict import load_model_bundle  # noqa: E402
 
 
-def render_model_information() -> None:
-    """
-    Load the saved model bundle and display core model metadata.
+st.set_page_config(
+    page_title="Breast Cancer Detection AI",
+    page_icon="🩺",
+    layout="wide",
+)
 
-    Returns
-    -------
-    None
-    """
-    st.subheader("Current Model Information")
+
+def inject_custom_css():
+    st.markdown(
+        """
+        <style>
+        .hero-box {
+            padding: 2rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            opacity: 0.92;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 120px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .feature-card h4 {
+            margin: 0 0 0.45rem 0;
+            color: #111827 !important;
+            font-size: 1.02rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: #374151 !important;
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+        .project-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 1rem;
+            min-height: 110px;
+        }
+
+        .project-card p {
+            margin: 0;
+            color: #1f2937 !important;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero():
+    st.markdown(
+        """
+        <div class="hero-box">
+            <div class="hero-title">🧬 Breast Cancer Detection AI</div>
+            <div class="hero-subtitle">
+                AI-powered decision-support system for early breast cancer classification.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_model_overview():
+    st.markdown('<div class="section-title">Current Model</div>', unsafe_allow_html=True)
 
     try:
         model_bundle = load_model_bundle()
-        model_name = model_bundle["model_name"]
-        scaling_required = model_bundle["scaling_required"]
-        feature_names = model_bundle["feature_names"]
 
         col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Model Name", model_name)
-        with col2:
-            st.metric("Scaling Required", "Yes" if scaling_required else "No")
-        with col3:
-            st.metric("Number of Features", len(feature_names))
+        col1.metric("Model", model_bundle["model_name"])
+        col2.metric("Scaling", "Yes" if model_bundle["scaling_required"] else "No")
+        col3.metric("Features", len(model_bundle["feature_names"]))
 
-    except FileNotFoundError as exc:
-        st.error(str(exc))
-        st.info("Train the model first by running: python -m src.train")
-    except (KeyError, ValueError) as exc:
-        st.error(f"Model bundle could not be read correctly: {exc}")
-    except Exception as exc:
-        st.error(f"Unexpected error while loading model information: {exc}")
+    except Exception:
+        st.warning("Model not loaded. Please run training first.")
 
 
-def render_project_overview() -> None:
-    """
-    Display the project overview section.
+def render_project_info():
+    st.markdown('<div class="section-title">Project Overview</div>', unsafe_allow_html=True)
 
-    Returns
-    -------
-    None
-    """
-    st.title("Breast Cancer Detection AI")
+    col1, col2 = st.columns(2)
 
-    st.write(
-        "This application predicts whether a breast tumor is **benign** or "
-        "**malignant** using **supervised machine learning** models trained on "
-        "diagnostic breast cancer data."
-    )
+    with col1:
+        st.markdown(
+            """
+            <div class="project-card">
+                <p>
+                    This system predicts whether a tumor is <b>benign</b> or <b>malignant</b>
+                    using supervised machine learning.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    st.write(
-        "It is designed as a **research and educational decision-support "
-        "prototype** to demonstrate how artificial intelligence can assist in "
-        "structured clinical data analysis for early breast cancer detection."
-    )
-
-
-def render_how_to_use_section() -> None:
-    """
-    Display guidance on how to use the multipage application.
-
-    Returns
-    -------
-    None
-    """
-    st.subheader("How to Use This App")
-
-    st.markdown(
-        """
-        **Home**  
-        View the project overview, current model details, app capabilities, and usage guidance.
-
-        **Manual Prediction**  
-        Enter all required diagnostic feature values manually to generate a single tumor classification result.
-
-        **Batch Prediction**  
-        Upload a CSV file containing multiple patient records and generate predictions for all rows at once.
-
-        **Visualizations**  
-        Explore dataset and model-related visual outputs such as distributions, comparison plots, and evaluation charts.
-
-        **Model Insights**  
-        Review model-related insights such as the selected model, feature importance, and interpretability-oriented outputs.
-
-        **About Project**  
-        Read the methodology, thesis alignment, project purpose, and research context behind the application.
-        """
-    )
+    with col2:
+        st.markdown(
+            """
+            <div class="project-card">
+                <p>
+                    Designed as a research-level decision-support system for AI in
+                    healthcare applications.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
-def render_capabilities_section() -> None:
-    """
-    Display the current capabilities of the application.
+def render_features():
+    st.markdown('<div class="section-title">Features</div>', unsafe_allow_html=True)
 
-    Returns
-    -------
-    None
-    """
-    st.subheader("Current Capabilities")
+    col1, col2 = st.columns(2)
 
-    st.markdown(
-        """
-        - Manual single prediction
-        - CSV batch prediction
-        - Probability output for supported models
-        - Deployment-ready saved model bundle
-        """
-    )
+    with col1:
+        st.markdown(
+            """
+            <div class="feature-card">
+                <h4>✍️ Manual Prediction</h4>
+                <p>Enter patient feature values manually and receive an instant AI-based prediction.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>📂 Batch Prediction</h4>
+                <p>Upload a CSV file and generate predictions for multiple patient cases at once.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>📊 Visualizations</h4>
+                <p>Explore class distribution, PCA, confusion matrix, ROC curve, and other analytical views.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        st.markdown(
+            """
+            <div class="feature-card">
+                <h4>🔍 Model Insights</h4>
+                <p>Understand model behavior, compare algorithms, and review important diagnostic features.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>⚙️ ML Pipeline</h4>
+                <p>Automated training, evaluation, model comparison, and deployment-ready model packaging.</p>
+            </div>
+
+            <div class="feature-card">
+                <h4>🚀 Future Ready</h4>
+                <p>Structured to support richer clinical insights, report generation, and decision-support upgrades.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
-def render_disclaimer() -> None:
-    """
-    Display the research and medical-use disclaimer.
+def render_workflow():
+    st.markdown('<div class="section-title">How to Use This App</div>', unsafe_allow_html=True)
 
-    Returns
-    -------
-    None
-    """
-    st.subheader("Disclaimer")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.info("**1. Home**\n\nOverview of the system")
+        st.info("**2. Manual Prediction**\n\nPredict single case")
+        st.info("**3. Batch Prediction**\n\nUpload CSV")
+
+    with col2:
+        st.info("**4. Visualizations**\n\nExplore data")
+        st.info("**5. Model Insights**\n\nUnderstand model")
+        st.info("**6. About Project**\n\nFull details")
+
+
+def render_disclaimer():
+    st.markdown('<div class="section-title">Disclaimer</div>', unsafe_allow_html=True)
 
     st.warning(
-        "This application is for research and educational purposes only. "
-        "It is not a medical diagnosis system. Users should consult qualified "
-        "healthcare professionals for real medical decisions."
+        "This application is for research purposes only and is NOT a medical diagnostic tool."
     )
 
 
-def main() -> None:
-    """
-    Main entry point for the Home page.
+def render_footer():
+    st.divider()
 
-    Returns
-    -------
-    None
-    """
-    render_project_overview()
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.markdown(
+            """
+            **Dev Tailor**  
+            Aspiring Data Scientist | AI & Analytics  
+
+            🧠 Focus: AI in Healthcare
+            """
+        )
+
+    with col2:
+        st.markdown(
+            """
+            <a href="https://www.linkedin.com/in/dev-tailor1212" target="_blank">🔗 LinkedIn</a><br>
+            <a href="https://github.com/Dev2104/breastcancerdetectionai" target="_blank">💻 GitHub</a><br>
+            📧 tailordev663@gmail.com
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.caption("© 2026 Breast Cancer Detection AI")
+
+
+def main():
+    inject_custom_css()
+    render_hero()
+    render_model_overview()
+
     st.divider()
-    render_model_information()
+    render_project_info()
+
     st.divider()
-    render_how_to_use_section()
+    render_features()
+
     st.divider()
-    render_capabilities_section()
+    render_workflow()
+
     st.divider()
     render_disclaimer()
+
+    render_footer()
 
 
 if __name__ == "__main__":
