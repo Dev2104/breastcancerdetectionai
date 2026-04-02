@@ -48,29 +48,33 @@ It is designed as a **research-oriented decision-support system** and demonstrat
 breastcancerdetectionai/
 │
 ├── app/
-│ ├── Home.py
-│ └── pages/
-│ ├── 2_Manual_Prediction.py
-│ ├── 3_Batch_Prediction.py
-│ └── 4_Visualizations.py
-│
-├── models/
-│ └── best_model.pkl
-│
-├── reports/
-│ ├── model_comparison.csv
-│ └── figures/
-│ ├── confusion_matrix.png
-│ └── roc_curve.png
+│   ├── Home.py
+│   └── pages/
+│       ├── 1_Manual_Prediction.py
+│       ├── 2_Batch_Prediction.py
+│       ├── 3_Visualizations.py
+│       ├── 4_Model_Insights.py
+│       └── 5_About_Project.py
 │
 ├── src/
-│ ├── data_loader.py
-│ ├── preprocess.py
-│ ├── train.py
-│ ├── evaluate.py
-│ ├── predict.py
-│ ├── unsupervised.py
-│ └── explain.py
+│   ├── data_loader.py
+│   ├── preprocess.py
+│   ├── train.py
+│   ├── predict.py
+│   ├── evaluate.py
+│   ├── explain.py
+│   └── unsupervised.py
+│
+├── models/
+│   ├── best_model.pkl
+│   ├── logistic_regression.pkl
+│   ├── decision_tree.pkl
+│   ├── random_forest.pkl
+│   ├── support_vector_machine.pkl
+│   └── k_nearest_neighbors.pkl
+│
+├── reports/
+│   ├── model_comparison.csv
 │
 ├── requirements.txt
 └── README.md
