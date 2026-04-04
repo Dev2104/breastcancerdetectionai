@@ -1,17 +1,8 @@
-"""
-4_Model_Insights.py
-
-Dynamic model insights page with support for ALL trained models.
-"""
-
 from pathlib import Path
 import sys
-from typing import Any
-
 import joblib
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
+import plotly.express as px
 import streamlit as st
 
 # =========================
@@ -21,13 +12,25 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# Import Glass UI Components
+from UI.ui_master import (
+    configure_page,
+    inject_master_theme,
+    render_page_header,
+    render_section_title,
+    render_metric_card,
+    render_divider,
+    render_footer_note,
+    render_card
+)
 
-# =========================
-# PATHS
-# =========================
+# Paths
 MODELS_DIR = PROJECT_ROOT / "models"
 BEST_MODEL_PATH = MODELS_DIR / "best_model.pkl"
 
+# Setup Page & Theme
+configure_page("Model Insights | Breast Cancer AI")
+inject_master_theme()
 
 # =========================
 # LOAD FUNCTIONS
@@ -37,16 +40,11 @@ def load_model_bundle(path: Path) -> dict:
         raise FileNotFoundError(f"Model not found: {path}")
     return joblib.load(path)
 
-
 def load_selected_model_bundle(model_name: str) -> dict:
     safe_name = model_name.lower().replace(" ", "_")
     model_path = MODELS_DIR / f"{safe_name}.pkl"
     return load_model_bundle(model_path)
 
-
-# =========================
-# FEATURE IMPORTANCE
-# =========================
 def get_feature_importance(model_bundle: dict) -> pd.DataFrame | None:
     model = model_bundle["model"]
     feature_names = model_bundle["feature_names"]
@@ -63,14 +61,13 @@ def get_feature_importance(model_bundle: dict) -> pd.DataFrame | None:
         "feature": feature_names,
         "importance": pd.Series(values).astype(float).abs()
     }).sort_values(by="importance", ascending=False)
-
     return df
-
 
 # =========================
 # MODEL DESCRIPTIONS
 # =========================
 def get_model_info(model_name: str) -> dict:
+    # FIXED: Replaced the incorrect ')' with '}' at the end of the dictionary
     return {
         "Logistic Regression": {
             "desc": "Linear model producing probability outputs.",
@@ -96,170 +93,109 @@ def get_model_info(model_name: str) -> dict:
             "desc": "Distance-based classifier.",
             "strengths": ["Simple", "No training"],
             "weaknesses": ["Slow", "Sensitive to noise"]
-        },
-    }.get(model_name, {})
-
+        }
+    }.get(model_name, {"desc": "Standard ML Classifier", "strengths": ["Standard Performance"], "weaknesses": ["N/A"]})
 
 # =========================
-# RENDER FUNCTIONS
+# PLOTLY GLASS RENDER
 # =========================
-def render_feature_importance(df: pd.DataFrame):
-    st.subheader("Feature Importance")
-
-    top_df = df.head(10)
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=top_df, x="importance", y="feature", ax=ax)
-    ax.set_title("Top 10 Features")
-
-    st.pyplot(fig)
-    plt.close(fig)
-
-    st.dataframe(top_df, use_container_width=True)
-
-    # Highlight top feature
-    st.info(f"Top influencing feature: **{top_df.iloc[0]['feature']}**")
-
-
-def render_interpretation(df: pd.DataFrame):
-    st.subheader("Interpretation")
-
-    st.write(
-        "The model prioritizes structural and geometric tumor characteristics. "
-        "These features help differentiate benign and malignant patterns."
+def render_glass_importance_chart(df: pd.DataFrame):
+    top_df = df.head(10).sort_values(by="importance", ascending=True)
+    
+    fig = px.bar(
+        top_df, 
+        x="importance", 
+        y="feature",
+        orientation='h',
+        color="importance",
+        color_continuous_scale="Viridis",
+        labels={"importance": "Impact Score", "feature": "Diagnostic Feature"}
     )
-
-    st.success("Higher importance = stronger influence on prediction.")
-
+    
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color="white",
+        height=400,
+        margin=dict(t=20, b=20, l=10, r=10),
+        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)'),
+        yaxis=dict(showgrid=False),
+        coloraxis_showscale=False
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
 
 # =========================
 # MAIN
 # =========================
 def main():
-    st.title("Model Insights")
-    st.divider()
+    render_page_header("Model Insights", "Deep-dive into algorithm behavior, strengths, and diagnostic logic.")
 
     try:
         best_bundle = load_model_bundle(BEST_MODEL_PATH)
+        
+        render_section_title("Current Champion Model")
+        c1, c2, c3 = st.columns(3)
+        with c1: render_metric_card("Best Model", best_bundle["model_name"])
+        with c2: render_metric_card("Scaling", "Required" if best_bundle["scaling_required"] else "None")
+        with c3: render_metric_card("Feature Set", f"{len(best_bundle['feature_names'])} Inputs")
 
-        # =========================
-        # BEST MODEL SUMMARY
-        # =========================
-        st.subheader("Current Best Model")
-
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Model", best_bundle["model_name"])
-        col2.metric("Scaling", "Yes" if best_bundle["scaling_required"] else "No")
-        col3.metric("Features", len(best_bundle["feature_names"]))
-
-        st.divider()
-        st.subheader("Model Summary")
-        st.success(f"Using **{best_bundle['model_name']}** as best-performing model.")
-
-        # =========================
-        # DROPDOWN
-        # =========================
-        st.divider()
-        st.subheader("Explore Models")
-
-        model_options = [
-            "Logistic Regression",
-            "Decision Tree",
-            "Random Forest",
-            "Support Vector Machine",
-            "K-Nearest Neighbors",
-        ]
-
-        selected_model = st.selectbox(
-            "Select a model:",
-            model_options
-        )
-
+        render_divider()
+        st.markdown('<div class="apple-glass">', unsafe_allow_html=True)
+        render_section_title("Compare Algorithms")
+        model_options = ["Logistic Regression", "Decision Tree", "Random Forest", "Support Vector Machine", "K-Nearest Neighbors"]
+        selected_model = st.selectbox("Select a model to inspect:", model_options)
+        
         if selected_model == best_bundle["model_name"]:
-            st.success("This is the best-performing model.")
+            st.info(f"✨ **{selected_model}** is currently the top-performing model.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        # =========================
-        # LOAD SELECTED MODEL
-        # =========================
         selected_bundle = load_selected_model_bundle(selected_model)
-
-        # =========================
-        # MODEL INFO
-        # =========================
         info = get_model_info(selected_model)
 
-        st.subheader(f"{selected_model} Overview")
-        st.info(info.get("desc", ""))
+        st.write("")
+        render_section_title(f"{selected_model} Profile")
+        render_card("Technical Summary", info.get("desc", ""))
 
         col1, col2 = st.columns(2)
-
         with col1:
-            st.subheader("Strengths")
+            st.markdown('<div class="apple-glass" style="border-left: 5px solid #34d399;">', unsafe_allow_html=True)
+            st.markdown("**Core Strengths**")
             for s in info.get("strengths", []):
-                st.success(f"✔ {s}")
+                st.markdown(f"✅ {s}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
         with col2:
-            st.subheader("Limitations")
+            st.markdown('<div class="apple-glass" style="border-left: 5px solid #f87171;">', unsafe_allow_html=True)
+            st.markdown("**Known Limitations**")
             for w in info.get("weaknesses", []):
-                st.error(f"✖ {w}")
+                st.markdown(f"⚠️ {w}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        # =========================
-        # FEATURE IMPORTANCE
-        # =========================
-        st.divider()
-
+        render_divider()
+        render_section_title("Diagnostic Feature Importance")
+        
         importance_df = get_feature_importance(selected_bundle)
 
         if importance_df is None or importance_df.empty:
-            st.warning(
-                "Feature importance not available for this model "
-                "(common for SVM and KNN)."
-            )
+            st.warning("Feature importance is mathematically unavailable for this model type.")
         else:
-            render_feature_importance(importance_df)
-            render_interpretation(importance_df)
+            st.markdown('<div class="apple-glass">', unsafe_allow_html=True)
+            render_glass_importance_chart(importance_df)
+            st.markdown(f"**Insight:** Top driver: **{importance_df.iloc[0]['feature']}**.")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     except Exception as e:
-        st.error(f"Error: {e}")
-        return
+        st.error(f"Analysis Error: {e}")
 
-    # =========================
-    # EXPLAINABILITY NOTE
-    # =========================
-    st.divider()
-    st.subheader("Explainability Note")
+    render_divider()
+    col_a, col_b = st.columns(2)
+    with col_a:
+        render_card("🔍 Why Explainability?", "AI transparency allows verification of correct biological markers.")
+    with col_b:
+        render_card("🏆 Selection Criteria", "Balanced evaluation based on Accuracy and F1-Score.")
 
-    st.info(
-        "Feature importance shows how much each input contributes to predictions. "
-        "This improves transparency of the AI system."
-    )
-
-    # =========================
-    # MODEL SELECTION
-    # =========================
-    st.divider()
-    st.subheader("Model Selection")
-
-    st.write(
-        "The best model is selected based on accuracy and performance metrics "
-        "such as precision, recall, and F1-score."
-    )
-
-    # =========================
-    # DISCLAIMER
-    # =========================
-    st.divider()
-    st.subheader("Disclaimer")
-
-    st.warning(
-        "This system is for research purposes only and not a medical diagnostic tool."
-    )
-
-    # =========================
-    # FOOTER
-    # =========================
-    st.caption("Breast Cancer Detection AI • Model Insights • Research Use Only")
-
+    render_footer_note("© 2026 Breast Cancer Detection AI")
 
 if __name__ == "__main__":
     main()

@@ -1,278 +1,147 @@
 from pathlib import Path
 import sys
-
 import streamlit as st
 
+# Setup Pathing
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.predict import load_model_bundle  # noqa: E402
-
-
-st.set_page_config(
-    page_title="Breast Cancer Detection AI",
-    page_icon="🩺",
-    layout="wide",
+from UI.ui_master import (  # noqa: E402
+    configure_page,
+    inject_master_theme,
+    render_page_header,
+    render_info_banner,
+    render_section_title,
+    render_card,
+    render_metric_card,
+    render_footer_note,
+    render_divider,
 )
 
-
-def inject_custom_css():
-    st.markdown(
-        """
-        <style>
-        .hero-box {
-            padding: 2rem;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-title {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .hero-subtitle {
-            font-size: 1rem;
-            opacity: 0.92;
-            color: white;
-        }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            min-height: 120px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-        .feature-card h4 {
-            margin: 0 0 0.45rem 0;
-            color: #111827 !important;
-            font-size: 1.02rem;
-            font-weight: 700;
-        }
-
-        .feature-card p {
-            margin: 0;
-            color: #374151 !important;
-            font-size: 0.95rem;
-            line-height: 1.55;
-        }
-
-        .project-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 1rem;
-            min-height: 110px;
-        }
-
-        .project-card p {
-            margin: 0;
-            color: #1f2937 !important;
-            font-size: 0.98rem;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def render_hero():
-    st.markdown(
-        """
-        <div class="hero-box">
-            <div class="hero-title">🧬 Breast Cancer Detection AI</div>
-            <div class="hero-subtitle">
-                AI-powered decision-support system for early breast cancer classification.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+# 1. Setup Page & Global Theme
+configure_page("Breast Cancer Detection AI")
+inject_master_theme()
 
 def render_model_overview():
-    st.markdown('<div class="section-title">Current Model</div>', unsafe_allow_html=True)
-
+    render_section_title("Current Model Status")
     try:
         model_bundle = load_model_bundle()
-
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Model", model_bundle["model_name"])
-        col2.metric("Scaling", "Yes" if model_bundle["scaling_required"] else "No")
-        col3.metric("Features", len(model_bundle["feature_names"]))
-
+        model_name = str(model_bundle.get("model_name", "Unknown"))
+        scaling_required = "Yes" if model_bundle.get("scaling_required", False) else "No"
+        feature_count = str(len(model_bundle.get("feature_names", [])))
     except Exception:
+        model_name, scaling_required, feature_count = "N/A", "N/A", "N/A"
         st.warning("Model not loaded. Please run training first.")
 
+    c1, c2, c3 = st.columns(3)
+    with c1: render_metric_card("Selected Model", model_name)
+    with c2: render_metric_card("Feature Scaling", scaling_required)
+    with c3: render_metric_card("Input Features", feature_count)
 
 def render_project_info():
-    st.markdown('<div class="section-title">Project Overview</div>', unsafe_allow_html=True)
-
+    render_section_title("Project Overview")
     col1, col2 = st.columns(2)
-
     with col1:
-        st.markdown(
-            """
-            <div class="project-card">
-                <p>
-                    This system predicts whether a tumor is <b>benign</b> or <b>malignant</b>
-                    using supervised machine learning.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        render_card("Clinical Prediction Focus", "Predicts tumor classification (Benign/Malignant) using supervised machine learning.")
     with col2:
-        st.markdown(
-            """
-            <div class="project-card">
-                <p>
-                    Designed as a research-level decision-support system for AI in
-                    healthcare applications.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        render_card("Research Application", "A decision-support tool combining AI, visual analytics, and model transparency.")
 
 def render_features():
-    st.markdown('<div class="section-title">Features</div>', unsafe_allow_html=True)
-
+    render_section_title("Core Capabilities")
     col1, col2 = st.columns(2)
-
     with col1:
-        st.markdown(
-            """
-            <div class="feature-card">
-                <h4>✍️ Manual Prediction</h4>
-                <p>Enter patient feature values manually and receive an instant AI-based prediction.</p>
-            </div>
-
-            <div class="feature-card">
-                <h4>📂 Batch Prediction</h4>
-                <p>Upload a CSV file and generate predictions for multiple patient cases at once.</p>
-            </div>
-
-            <div class="feature-card">
-                <h4>📊 Visualizations</h4>
-                <p>Explore class distribution, PCA, confusion matrix, ROC curve, and other analytical views.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        render_card("✍️ Manual Prediction", "Input features manually for a real-time diagnostic classification.")
+        render_card("📂 Batch Prediction", "Upload CSV data for high-volume automated screening.")
     with col2:
-        st.markdown(
-            """
-            <div class="feature-card">
-                <h4>🔍 Model Insights</h4>
-                <p>Understand model behavior, compare algorithms, and review important diagnostic features.</p>
-            </div>
-
-            <div class="feature-card">
-                <h4>⚙️ ML Pipeline</h4>
-                <p>Automated training, evaluation, model comparison, and deployment-ready model packaging.</p>
-            </div>
-
-            <div class="feature-card">
-                <h4>🚀 Future Ready</h4>
-                <p>Structured to support richer clinical insights, report generation, and decision-support upgrades.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        render_card("📊 Visual Analytics", "Advanced charts including PCA, ROC Curves, and Confusion Matrices.")
+        render_card("🔍 Model Insights", "Transparency into feature importance and decision-making logic.")
 
 def render_workflow():
-    st.markdown('<div class="section-title">How to Use This App</div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.info("**1. Home**\n\nOverview of the system")
-        st.info("**2. Manual Prediction**\n\nPredict single case")
-        st.info("**3. Batch Prediction**\n\nUpload CSV")
-
-    with col2:
-        st.info("**4. Visualizations**\n\nExplore data")
-        st.info("**5. Model Insights**\n\nUnderstand model")
-        st.info("**6. About Project**\n\nFull details")
-
-
-def render_disclaimer():
-    st.markdown('<div class="section-title">Disclaimer</div>', unsafe_allow_html=True)
-
-    st.warning(
-        "This application is for research purposes only and is NOT a medical diagnostic tool."
-    )
-
+    render_section_title("Platform Workflow")
+    
+    steps = [
+        ("1. Home", "Overview of model & system."),
+        ("2. Manual", "Single-case diagnostics."),
+        ("3. Batch", "CSV processing."),
+        ("4. Visuals", "Analytical deep-dives."),
+        ("5. Insights", "Model interpretation."),
+        ("6. About", "Full technical scope.")
+    ]
+    
+    cols = st.columns(3)
+    # FIXED: Single loop to prevent duplication
+    for i, (title, desc) in enumerate(steps):
+        with cols[i % 3]:
+            render_card(title, desc)
 
 def render_footer():
-    st.divider()
-
-    col1, col2 = st.columns([2, 1])
-
+    render_divider()
+    render_section_title("Developer Contact")
+    
+    col1, col2 = st.columns(2)
+    
     with col1:
+        # Styled to match your reference image exactly
         st.markdown(
-            """
-            **Dev Tailor**  
-            Aspiring Data Scientist | AI & Analytics  
-
-            🧠 Focus: AI in Healthcare
-            """
+            f"""
+            <div class="apple-glass" style="min-height: 160px;">
+                <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-color); margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                    💻 Dev Tailor
+                </div>
+                <p style="color: var(--text-color); opacity: 0.8; font-size: 0.95rem; margin-bottom: 12px;">
+                    Aspiring Data Scientist | AI in Healthcare
+                </p>
+                <a href="mailto:tailordev663@gmail.com" style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1fa8bb; text-decoration: none;">
+                    📧 Email: tailordev663@gmail.com
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
     with col2:
+        # Styled to match your reference image exactly
         st.markdown(
-            """
-            <a href="https://www.linkedin.com/in/dev-tailor1212" target="_blank">🔗 LinkedIn</a><br>
-            <a href="https://github.com/Dev2104/breastcancerdetectionai" target="_blank">💻 GitHub</a><br>
-            📧 tailordev663@gmail.com
+            f"""
+            <div class="apple-glass" style="min-height: 160px;">
+                <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-color); margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                    🔗 Quick Links
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="https://www.linkedin.com/in/dev-tailor1212" target="_blank" style="font-weight: 600; color: #1fa8bb; text-decoration: none;">
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/Dev2104/breastcancerdetectionai" target="_blank" style="font-weight: 600; color: #1fa8bb; text-decoration: none;">
+                        GitHub
+                    </a>
+                </div>
+            </div>
             """,
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
 
-    st.caption("© 2026 Breast Cancer Detection AI")
-
+    render_footer_note("© 2026 Breast Cancer Detection AI")
 
 def main():
-    inject_custom_css()
-    render_hero()
+    # Header Section
+    render_page_header(
+        "🧬 Breast Cancer Detection AI", 
+        "Advanced diagnostic support system for early cancer classification."
+    )
+    
+    render_info_banner("Welcome! This dashboard provides the core entry point for all diagnostic and analytical modules.")
+    
+    # Render all UI sections
     render_model_overview()
-
-    st.divider()
     render_project_info()
-
-    st.divider()
     render_features()
-
-    st.divider()
     render_workflow()
-
-    st.divider()
-    render_disclaimer()
-
+    
+    # Disclaimer and Footer
+    st.error("**Disclaimer:** This tool is for research purposes only and is not a substitute for professional medical advice.", icon="⚠️")
     render_footer()
-
 
 if __name__ == "__main__":
     main()
