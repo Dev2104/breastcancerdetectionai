@@ -148,7 +148,7 @@ def main():
         render_glass_block("ROC Curve", "Static performance report.", render_static_image, ROC_CURVE_PATH, "Run training to generate.")
 
     render_divider()
-    render_footer_note("© 2026 Breast Cancer Detection AI | Powered by Plotly Interactive")
+    render_footer_note("© 2026 Breast Cancer Detection AI")
 
 if __name__ == "__main__":
     main()
