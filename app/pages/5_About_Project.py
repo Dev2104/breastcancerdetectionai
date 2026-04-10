@@ -137,7 +137,7 @@ def main():
     st.write("")
     st.error("❗ **Legal Disclaimer:** This application is strictly for research and academic purposes. It is NOT a certified medical diagnostic tool.", icon="⚖️")
 
-    render_footer_note("© 2026 Breast Cancer Detection AI | Master's Research Support")
+    render_footer_note("© 2026 Breast Cancer Detection AI")
 
 if __name__ == "__main__":
     main()
